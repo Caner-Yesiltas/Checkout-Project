@@ -1,19 +1,18 @@
 let sepettekiler = [
-    { name: "Vintage Backpack", price: 34.99, piece: 1, img: "./img/photo1.png" },
-    { name: "Levi Shoes", price: 40.99, piece: 1, img: "./img/photo2.png" },
-    { name: "Antique Clock", price: 69.99, piece: 1, img: "./img/photo3.jpg" },
-  ];
+  { name: "Vintage Backpack", price: 34.99, piece: 1, img: "./img/photo1.png" },
+  { name: "Levi Shoes", price: 40.99, piece: 1, img: "./img/photo2.png" },
+  { name: "Antique Clock", price: 69.99, piece: 1, img: "./img/photo3.jpg" },
+];
 
+const shipping = 15.0;
+const tax = 0.18;
 
-const shipping=15.0;
-const tax=0.18;
+sepettekiler.forEach(({ name, price, piece, img }) => {
+  // yakalamis oldugum divin icine bunlari yaz diyorum ! [innerhtml] yakalnan seyin icine htmli gomer. adindan belli html! eklemek
 
+  //burada destructing uyguluyoruz heer bir donen elemani yukaridaki epettekilerin icinden al diyerek item.name item.price demeye gerek kalmiyor
 
-sepettekiler.forEach(({name,price,piece,img}) => {   // yakalamis oldugum divin icine bunlari yaz diyorum ! [innerhtml] yakalnan seyin icine htmli gomer. adindan belli html! eklemek
-
-    //burada destructing uyguluyoruz heer bir donen elemani yukaridaki epettekilerin icinden al diyerek item.name item.price demeye gerek kalmiyor
-
-    document.querySelector("#product-rowlari").innerHTML+= ` 
+  document.querySelector("#product-rowlari").innerHTML += ` 
        <div class="card mb-3" style="max-width: 540px;">
 
   <div class="row ">
@@ -70,45 +69,84 @@ sepettekiler.forEach(({name,price,piece,img}) => {   // yakalamis oldugum divin 
     </div>
   </div>
 </div> 
-      `   ; 
-
-
-
+      `;
 });
 
-calculateCardTotal()
+calculateCardTotal();
 
 function calculateCardTotal() {
+  const toplam = document.querySelectorAll("#product-total");
+  const pToplam = Array.from(toplam).reduce(
+    (acc, item) => acc + Number(item.textContent),
+    0
+  ); // baslangicta sifir olarak gelir
 
-   const toplam= document.querySelectorAll("#product-total");
-   const pToplam = Array.from(toplam).reduce((acc, item) => acc + Number(item.textContent), 0) // baslangicta sifir olarak gelir 
+  document.querySelector(".productstoplam").textContent = pToplam;
 
-   document.querySelector(".productstoplam").textContent=pToplam
+  document.querySelector(".vergi").textContent = pToplam * tax; // toplamdan aldigimiz degerleri vergi ile carp ve vergi olan yere bas yaz demek textcontent
 
-   document.querySelector(".vergi").textContent=pToplam * tax // toplamdan aldigimiz degerleri vergi ile carp ve vergi olan yere bas yaz demek textcontent
-   
-   document.querySelector(".kargo").textContent=pToplam ? shipping:0  // ternaryde true false degerleri bakilir ptoplam eger 0dan farkliysa true olur ve true olursa
-   // kargonun icerigini ptoplam ile degistiririz fakat deger 0 ise shpping de sifir olur kisaca herhangi bir sayi varsa kargo gozukur fiyat yoksa kargo 0 gozukur demek!
-   
-   
-   
-   document.querySelector(".toplam").textContent= pToplam ? (pToplam+pToplam*tax+shipping) :0
-    
-};
+  document.querySelector(".kargo").textContent = pToplam ? shipping : 0; // ternaryde true false degerleri bakilir ptoplam eger 0dan farkliysa true olur ve true olursa
+  // kargonun icerigini ptoplam ile degistiririz fakat deger 0 ise shpping de sifir olur kisaca herhangi bir sayi varsa kargo gozukur fiyat yoksa kargo 0 gozukur demek!
 
-removeButton()
+  document.querySelector(".toplam").textContent = pToplam
+    ? pToplam + pToplam * tax + shipping
+    : 0;
+}
 
+removeButton();
 
-
-unction removeButton() {
+function removeButton() {
   document.querySelectorAll(".remove-product").forEach((btn) => {
     btn.onclick = () => {
       //?ekrandan sil
 
       // btn.parentElement.parentElement.parentElement.parentElement.remove()
-      btn.closest(".card").remove();
+      btn.closest(".card").remove(); // cagirildigi elementden baslar bir ust bir ust btn. card clasini bulana kadar yukari cikar !
 
       calculateCardTotal();
+    };
+  });
+}
+
+function pieceButton() {
+  document.querySelectorAll(".adet-controller").forEach((kutu) => {
+    const plus = kutu.lastElementChild;
+    const minus = kutu.firstElementChild;
+    const adet = plus.previousElementSibling;
+    // const adet=kutu.children[1]
+
+    //!plus butonuna basınca olacaklar
+
+    plus.onclick = () => {
+      //ekranda adet güncelledik
+      adet.textContent = +adet.textContent + 1;
+
+      //ürünün carddaki toplamının güncellenmesi
+      plus.closest(".card-body").querySelector(".product-total").textContent =
+        plus.closest(".card-body").querySelector(".indirim-price").textContent *
+        adet.textContent;
+
+      calculateCardTotal();
+    };
+
+    //!minus a basınca olacaklar
+    minus.onclick = () => {
+      //ekranda adet güncelledik
+      adet.textContent = adet.textContent - 1;
+
+      //ürünün carddaki toplamının güncellenmesi
+      minus.closest(".card-body").querySelector(".product-total").textContent =
+        minus.closest(".card-body").querySelector(".indirim-price")
+          .textContent * adet.textContent;
+
+      calculateCardTotal();
+
+      //!adet 1 iken minus a basılırsa ürün ekrandan silinsin
+      if (adet.textContent < 1) {
+        alert("sileyim mi?");
+
+        minus.closest(".card").remove();
+      }
     };
   });
 }
