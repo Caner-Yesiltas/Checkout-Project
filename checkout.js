@@ -96,3 +96,19 @@ function calculateCardTotal() {
     
 };
 
+removeButton()
+
+
+
+unction removeButton() {
+  document.querySelectorAll(".remove-product").forEach((btn) => {
+    btn.onclick = () => {
+      //?ekrandan sil
+
+      // btn.parentElement.parentElement.parentElement.parentElement.remove()
+      btn.closest(".card").remove();
+
+      calculateCardTotal();
+    };
+  });
+}
