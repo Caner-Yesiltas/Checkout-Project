@@ -77,3 +77,11 @@ sepettekiler.forEach(({name,price,piece,img}) => {   // yakalamis oldugum divin 
 });
 
 
+function calculateCardTotal() {
+
+   const toplam= document.querySelectorAll("#product-total");
+   Array.from(toplam).reduce((previousValue, currentValue, currentIndex, array) => {}, initialValue)
+
+
+    
+}
