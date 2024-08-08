@@ -1,19 +1,24 @@
+//* ===================================================
+//*                 Checkout Page Solution
+//*  map filter, dest, bubbling ===================================================
+//!table da kullanılacak değişkenler
+const shipping = 15.0;
+const tax = 0.18;
+
 let sepettekiler = [
   { name: "Vintage Backpack", price: 34.99, piece: 1, img: "./img/photo1.png" },
   { name: "Levi Shoes", price: 40.99, piece: 1, img: "./img/photo2.png" },
   { name: "Antique Clock", price: 69.99, piece: 1, img: "./img/photo3.jpg" },
 ];
 
-const shipping = 15.0;
-const tax = 0.18;
+//!EKRANA BASTIRMA
 
-sepettekiler.forEach(({ name, price, piece, img }) => {
-  // yakalamis oldugum divin icine bunlari yaz diyorum ! [innerhtml] yakalnan seyin icine htmli gomer. adindan belli html! eklemek
+sepettekiler.forEach(({ img, name, price, piece }) => {
+  // dest
+  //   const{img,name,price}=urun
 
-  //burada destructing uyguluyoruz heer bir donen elemani yukaridaki epettekilerin icinden al diyerek item.name item.price demeye gerek kalmiyor
-
-  document.querySelector("#product-rowlari").innerHTML += ` 
-       <div class="card mb-3" style="max-width: 540px;">
+  document.querySelector("#product-rowlari").innerHTML += `
+    <div class="card mb-3" style="max-width: 540px;">
 
   <div class="row ">
 
@@ -68,32 +73,18 @@ sepettekiler.forEach(({ name, price, piece, img }) => {
       </div>
     </div>
   </div>
-</div> 
-      `;
+</div>
+    `;
 });
 
+//!browserdaki toplam fiyatların olduğu table ı güncelleme fonksiyonu
 calculateCardTotal();
 
-function calculateCardTotal() {
-  const toplam = document.querySelectorAll("#product-total");
-  const pToplam = Array.from(toplam).reduce(
-    (acc, item) => acc + Number(item.textContent),
-    0
-  ); // baslangicta sifir olarak gelir
-
-  document.querySelector(".productstoplam").textContent = pToplam;
-
-  document.querySelector(".vergi").textContent = pToplam * tax; // toplamdan aldigimiz degerleri vergi ile carp ve vergi olan yere bas yaz demek textcontent
-
-  document.querySelector(".kargo").textContent = pToplam ? shipping : 0; // ternaryde true false degerleri bakilir ptoplam eger 0dan farkliysa true olur ve true olursa
-  // kargonun icerigini ptoplam ile degistiririz fakat deger 0 ise shpping de sifir olur kisaca herhangi bir sayi varsa kargo gozukur fiyat yoksa kargo 0 gozukur demek!
-
-  document.querySelector(".toplam").textContent = pToplam
-    ? pToplam + pToplam * tax + shipping
-    : 0;
-}
-
 removeButton();
+
+pieceButton();
+
+//!SİLME FONKSİYONU
 
 function removeButton() {
   document.querySelectorAll(".remove-product").forEach((btn) => {
@@ -101,12 +92,14 @@ function removeButton() {
       //?ekrandan sil
 
       // btn.parentElement.parentElement.parentElement.parentElement.remove()
-      btn.closest(".card").remove(); // cagirildigi elementden baslar bir ust bir ust btn. card clasini bulana kadar yukari cikar !
+      btn.closest(".card").remove();
 
       calculateCardTotal();
     };
   });
 }
+
+//! ADET DEĞİŞTİRME FONKSİYONU
 
 function pieceButton() {
   document.querySelectorAll(".adet-controller").forEach((kutu) => {
@@ -150,3 +143,57 @@ function pieceButton() {
     };
   });
 }
+
+//! Card toplam değerini hesaplama
+
+function calculateCardTotal() {
+  const toplam = document.querySelectorAll(".product-total");
+
+  //!   querySelectorAll(), statik bir NodeList döndürür.
+  //!burada netten https://softauthor.com/javascript-htmlcollection-vs-nodelist/
+  // Dizi Değil!
+  // Bir NodeList bir dizi gibi görünebilir ama öyle değildir.
+  // Bir NodeList içinde döngü yapabilir ve düğümlerine dizine göre başvurabilirsiniz.
+  // Ancak, bir NodeList'te reduce(), push(), pop() veya join() gibi Array yöntemlerini kullanamazsınız.
+
+  //? pToplam= en alttaki tüm ürünler için vergi ve kargo hariç sepettekilerin indirimli fiyat toplamı
+  //?Reduce tam olarak Array istiyor, nodelist yeterli değil
+
+  const pToplam = Array.from(toplam).reduce(
+    (acc, item) => acc + Number(item.textContent),
+    0
+  );
+
+  document.querySelector(".productstoplam").textContent = pToplam;
+
+  document.querySelector(".vergi").textContent = pToplam * tax;
+
+  document.querySelector(".kargo").textContent = pToplam ? shipping : 0;
+
+  document.querySelector(".toplam").textContent = pToplam
+    ? pToplam + pToplam * tax + shipping
+    : 0;
+}
+
+
+//!BUBBLİNG
+
+let flag = false;
+
+let h1 = document.querySelector("h1");
+
+h1.onclick = (e) => {
+   flag = !flag;
+  flag ? (h1.textContent = "Checkout Project") : (h1.textContent = "Cash-Carry");
+
+  //!çalış ve sonra parent ını etkileme
+   e.stopPropagation();
+};
+
+let header = document.querySelector("header");
+
+header.onclick = () => {
+  flag = !flag;
+  flag ? (h1.textContent = "seni ezdim") 
+  : (h1.textContent = "tamam kızma");
+};
