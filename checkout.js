@@ -76,12 +76,23 @@ sepettekiler.forEach(({name,price,piece,img}) => {   // yakalamis oldugum divin 
 
 });
 
+calculateCardTotal()
 
 function calculateCardTotal() {
 
    const toplam= document.querySelectorAll("#product-total");
-   Array.from(toplam).reduce((previousValue, currentValue, currentIndex, array) => {}, initialValue)
+   const pToplam = Array.from(toplam).reduce((acc, item) => acc + Number(item.textContent), 0) // baslangicta sifir olarak gelir 
 
+   document.querySelector(".productstoplam").textContent=pToplam
 
+   document.querySelector(".vergi").textContent=pToplam * tax // toplamdan aldigimiz degerleri vergi ile carp ve vergi olan yere bas yaz demek textcontent
+   
+   document.querySelector(".kargo").textContent=pToplam ? shipping:0  // ternaryde true false degerleri bakilir ptoplam eger 0dan farkliysa true olur ve true olursa
+   // kargonun icerigini ptoplam ile degistiririz fakat deger 0 ise shpping de sifir olur kisaca herhangi bir sayi varsa kargo gozukur fiyat yoksa kargo 0 gozukur demek!
+   
+   
+   
+   document.querySelector(".toplam").textContent= pToplam ? (pToplam+pToplam*tax+shipping) :0
     
-}
+};
+
